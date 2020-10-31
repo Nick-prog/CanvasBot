@@ -1,23 +1,92 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30611.23
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "SeniorDesignPrototype1Attempt2", "SeniorDesignPrototype1Attempt2\SeniorDesignPrototype1Attempt2.pyproj", "{2D3BD707-8351-4997-9F70-1A86FD6DBDF8}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2D3BD707-8351-4997-9F70-1A86FD6DBDF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D3BD707-8351-4997-9F70-1A86FD6DBDF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {F8684729-05ED-4D2C-A297-345B9F508925}
-	EndGlobalSection
-EndGlobal
+
+''' Prototype 1 (Date: Oct. 18, 2020)'''
+''' Nickolas Rodriguez '''
+''' Adam Pena '''
+''' Jermeiah Garcia '''
+''' Alec Villareal '''
+''' Ricky Owkara '''
+
+import discord
+from discord.ext import commands
+from canvasapi import Canvas
+
+''' DiscordClass contains all of the logic needed to interface with discord '''
+class DiscordClass:
+    #global variable in DiscordClass for Discord bot access 
+    TOKEN = 'insert token'
+    #global variable in DiscordClass for setting command prefix
+    client = commands.Bot(command_prefix = '$')
+
+    #client event that displays when bot is ready
+    @client.event
+    async def on_ready():
+        print('Bot is ready')
+
+    #client event that deletes a specific type of message ($account command inputs)
+    #@client.event
+    #async def on_message(message):
+    #   print('Message deleted')
+
+    #client command that will take Canvas account information
+    @client.command(aliasas = ['Log', 'log', 'Acc', 'acc'])
+    async def account(ctx):
+        await ctx.send('Saved!')
+
+    #client command that will display Canvas account's current courses
+    @client.command(aliases = ['Co', 'co'])
+    async def courses(ctx):
+        response = 'Nothing.'
+        await ctx.send(f'Here are your courses!\n {(response)}')
+
+    #client command that will display Canvas account's current calender events
+    @client.command(aliasas = ['Cal', 'cal'])
+    async def calendar(ctx):
+        response = 'Nothing.'
+        await ctx.send(f'Here is your calendar!\n {(response)}')
+
+    #client command that will display Canvas account's current announcements
+    @client.command(aliasas = ['Ano', 'ano'])
+    async def announce(ctx):
+        response = 'Nothing.'
+        await ctx.send(f'Here are your announcements!\n {(response)}')
+
+    #turns on and runs the discord bot
+    client.run(TOKEN)
+
+''' CavnasClass contains all the logic needed to interface with Canvas '''
+class CanvasClass:
+    #global variables in CanvasClass for CanvasAPI access
+    base_url = "https://canvas.instructure.com/api/v1"
+    access_token = "insert canvas token"
+    canvas = Canvas(base_url, access_token)
+   
+    #defined subclass for login in Canvas
+    def get_account(self, account, use_sis_id=False, **kwargs):
+        return canvasapi.account.Account
+
+    #defined subclass for get_course function in CanvasAPI
+    def get_course(self, course, use_sis_id=False, **kwargs):
+        return canvasapi.course.Course
+
+    #defined subclass for get_calendar_event function in CavnasAPI
+    def get_calendar_events(self, **kwargs):
+        return canvas.calendar_event.CalendarEvent
+
+    #defined subclass for get_announcements function in CanvasAPI
+    def get_announcements(self, **kwargs):
+        return canvasapi.paginated_list.PaginatedList
+
+''' Creates the bridge for DiscordClass and CanvasClass through simplified logic '''
+class Mediator:
+
+    #defined subclass for requesting courses
+    def requestCourses():
+        return CanvasClass.get_course(self, course, use_sis_id=False, **kwargs)
+
+    #defined subclass for requesting calendar events
+    def requestCalendar():
+        return CanvasClass.get_calendar_event(self, **kwargs)
+
+    #defined subclass for requesting announcements
+    def requestAnnouce():
+        return CanvasClass.get_announcements(self, **kwargs)
