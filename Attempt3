@@ -1,0 +1,47 @@
+
+#.....Prototype 2 (Date: Nov. 3, 2020).....
+#...........Nickolas Rodriguez.............
+#...........Adam Pena......................
+#...........Jermeiah Garcia................
+#...........Alec Villareal.................
+#...........Ricky Owkara...................
+
+import discord
+from discord.ext import commands
+import requests
+from selenium import webdriver
+
+''' DiscordClass contains all of the logic needed to interface with discord '''
+class DiscordClass:
+    #global variable in DiscordClass for Discord bot access 
+    TOKEN = 'insert bot token'
+    #global variable in DiscordClass for setting command prefix
+    client = commands.Bot(command_prefix = '$')
+    #client event that displays when bot is ready
+    @client.event
+    async def on_ready():
+        print('Bot is ready')
+    #client command that will take Blackboard course information
+    @client.command(aliasas = ['Courses', 'courses'])
+    async def courses(ctx):
+        User = "insert Blackboard username"
+        Pass = "insert Blackboard password"
+        browser = webdriver.Chrome(executable_path =r'C:/path/to/chromedriver.exe')
+        type(browser)
+        browser.get("https://jnet.tamuk.edu/")
+        username = browser.find_element_by_id('username')
+        username.send_keys(User)
+        password = browser.find_element_by_id('password')
+        password.send_keys(Pass)
+        password.submit()
+        URL = "https://blackboard.tamuk.edu/webapps/bb-auth-provider-cas-bb_bb60/execute/casLogin?cmd=login&amp;authProviderId=_107_1&amp;redirectUrl=https%3A%2F%2Fblackboard.tamuk.edu%2Fultra"
+        page = requests.get(URL)
+        temp = page.content
+        temp2 = page.text
+        print(page)
+        print(temp)
+        print(temp2)
+        await ctx.send('Here are your courses!')
+    #turns on and runs the discord bot
+    client.run(TOKEN)
+        
