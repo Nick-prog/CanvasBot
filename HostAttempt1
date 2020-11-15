@@ -1,0 +1,32 @@
+import Discord
+from discord.ext import commands
+from canvasapi import Canvas
+
+class DiscordClass(object):
+    TOKEN = 'NzYyNDEzMjc1OTEyNjAxNjUx.X3oysQ.GTcTY8Z_OjllIMjzI4HuATgRcI0'
+    client = commands.Bot(command_prefix = '$')
+
+    @client.event
+    async def on_ready():
+        print('Bot is ready')
+ 
+    @client.command()
+
+    async def account(ctx):
+        base_url = 'https://35.223.110.134/login/canvas'
+        access_token = 'LTzGbvk11TI057Gp837CmlQZ5xxDR0HPVwHM6TDKFOha6vjhTfPkzWrA15WHkSb8'
+        canvas = Canvas(base_url, access_token)
+        print(canvas)
+
+        sis_user_id = 4554
+        temp = canvas.get_user(sis_user_id)
+        print(temp)
+
+    client.run(TOKEN)
+
+
+
+
+
+
+
