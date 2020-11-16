@@ -3,7 +3,7 @@ from discord.ext import commands
 from canvasapi import Canvas
 
 class DiscordClass():
-    TOKEN = 'NzYyNDEzMjc1OTEyNjAxNjUx.X3oysQ.9GG7OHxOvM3xYCWb5EeA7OiWMuw'
+    TOKEN = 'enter token'
     client = commands.Bot(command_prefix = '$')
 
     @client.event
