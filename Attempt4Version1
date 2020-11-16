@@ -1,0 +1,82 @@
+import Discord
+from discord.ext import commands
+from canvasapi import Canvas
+
+class DiscordClass():
+    TOKEN = 'NzYyNDEzMjc1OTEyNjAxNjUx.X3oysQ.9GG7OHxOvM3xYCWb5EeA7OiWMuw'
+    client = commands.Bot(command_prefix = '$')
+
+    @client.event
+    async def on_ready():
+        print('Bot is ready')
+ 
+    @client.command()
+    async def test(ctx):
+        base_url1 = 'https://canvas.instructure.com/'                                        #URL for website
+        access_token1 = '7~7d5FoNdWiZFO6UkTxuPONLRxxQ9sXAybjiog8vNpwE0RA3D75VYcAeDkzKSMfNjR' #Access token registered to the user's acccount
+        canvas = Canvas(base_url1, access_token1)                                            #Initializes the Canvas object
+        print(canvas)                                                                        #Simple print statement to show completion
+
+        ''' Uses a course id in the get_course function to find the user's id '''
+        course_id = 2421114                                                                  #Course id the user currently is in
+        course = canvas.get_course(course_id)                                                #Uses the get_course function to pass course id
+        user = course.get_users(search_term = 'Nickolas Rodriguez')                          #Searches the course for a user with the given name
+        user_id = user[0]                                                                    #Accesses the first entry of the paginated list retrieved
+        print(user_id)                                                                       #Prints results in command console
+
+        ''' Uses user id recieved to test if the get_user function works '''
+        user1 = course.get_user(id_type = id, user = user_id)                                #Uses get_user function to pass user id
+        print(user1)                                                                         #Prints results in command console
+
+        ''' Uses get_courses function to display all of the courses the user is in '''
+        course1 = canvas.get_courses()                                                       #Uses get_courses function to find out all user registered courses
+        print(course1)                                                                       #Prints result without properly accessing the paginated list
+        print(course1[0])                                                                    #Prints result of the first entry in the paginated list retrieved
+        print(course1[1])                                                                    #Prints result of the second entry in the panginated list retrieved
+
+    class Discord_Setup():
+        @client.command
+        async def setup(ctx):
+            arg1 = 'https://canvas.instructure.com/'
+            arg2 = '7~7d5FoNdWiZFO6UkTxuPONLRxxQ9sXAybjiog8vNpwE0RA3D75VYcAeDkzKSMfNjR'
+            await ctx.send("Base URL = " + arg1 + ", Access Token = " + arg2)
+
+    class Discord_User():
+        @client.command()
+        async def user(ctx):
+            discord = CanvasClass()
+            result = discord.user
+            arg = '28468322'
+            result(arg)
+            await ctx.send("User information: " + result)
+
+    class Discord_Courses():
+        @client.command()
+        async def courses(ctx):
+            discord = CanvasClass.Canvas_Courses()
+            result = discord.course
+            await ctx.send("Courses: " + result)
+
+
+    client.run(TOKEN)
+
+class CanvasClass(DiscordClass):
+    
+    class Canvas_Setup():
+        def setup():
+            discord = DiscordClass()
+            base_url = discord.setup(arg1)
+            access_url = discord.setup(arg2)
+            canvas = Canvas(base_url, access_token)
+
+
+    class Canvas_User():
+        def user(self,**kwargs):
+            user_return = canvas.get_user(**kwargs)
+            return(user_return[0])
+
+    class Canvas_Courses():
+        def course():
+            course_return = canvas.get_course()
+            return(course_return[0])
+
