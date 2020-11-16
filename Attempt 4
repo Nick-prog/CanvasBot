@@ -1,0 +1,46 @@
+import Discord
+from discord.ext import commands
+from canvasapi import Canvas
+
+class DiscordClass(object):
+    TOKEN = 'enter token'
+    client = commands.Bot(command_prefix = '$')
+
+    @client.event
+    async def on_ready():
+        print('Bot is ready')
+ 
+    @client.command()
+
+    async def test(ctx):
+        #base_url = 'http://104.197.14.252/login/canvas'
+        #access_token = 'LTzGbvk11TI057Gp837CmlQZ5xxDR0HPVwHM6TDKFOha6vjhTfPkzWrA15WHkSb8'
+        #canvas = Canvas(base_url, access_token)
+        #print(canvas)
+
+        base_url1 = 'https://canvas.instructure.com/'
+        access_token1 = '7~7d5FoNdWiZFO6UkTxuPONLRxxQ9sXAybjiog8vNpwE0RA3D75VYcAeDkzKSMfNjR'
+        canvas = Canvas(base_url1, access_token1)
+        print(canvas)
+
+        course_id = 2421114
+        course = canvas.get_course(course_id)
+        user = course.get_users(search_term = 'Nickolas Rodriguez')
+        user_id = user[0]
+        print(user_id)
+        user1 = course.get_user(id_type = id, user = user_id)
+        print(user1)
+
+        course1 = canvas.get_courses()
+        print(course1)
+        print(course1[0])
+        print(course1[1])
+
+    client.run(TOKEN)
+
+
+
+
+
+
+
