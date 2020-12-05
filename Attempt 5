@@ -1,0 +1,63 @@
+import Discord
+from discord.ext import commands
+from canvasapi import Canvas
+
+TOKEN = 'enter token'
+client = commands.Bot(command_prefix = '$')
+
+@client.event
+async def on_ready():
+    print('Bot is ready') 
+ 
+'''Info command that shows all of the current commands for the current version of the code'''
+@client.command()
+async def info(ctx):
+    message = ("__**Welcome to Canvas Bot.**__"
+                   + "\n *Courses command*"
+                   + "\n Type **$courses**, **$c** or **$C** to display all of your currently enrolled."
+                   + "\n *Event command*"
+                   + "\n Type **$events**, **$e** or **$E** to display all of your current events."
+                   + "\n *Announcment command*"
+                   + "\n Type **$announcements**, **$a** or **$A** to display all of your current announcements for a specific course")
+    await ctx.author.send(message)
+
+'''Course command that shows all of the current courses for a specific user'''
+@client.command(aliases = ['c', 'C'])
+async def courses(ctx):
+    base_url = "https://canvas.instructure.com/"
+    access_token = 'enter token'
+    canvas = Canvas(base_url, access_token)
+    list = canvas.get_courses()
+    for courses in list:
+        await ctx.channel.send(f'*Name:* **{courses.name}** \n *Course ID:* {courses.id} \n*Course Code:* _{courses.course_code}_')
+    await ctx.channel.send('__**Here are your current courses!**__'
+                           + "```\nOutputs include the course's: "
+                           + '\nName: [course name] \nCourse ID: [id] \nCourse Code: [code]```')
+
+'''Event command that shows all of the current events for a specific user'''
+@client.command(aliases = ['e', 'E'])
+async def events(ctx):
+    base_url = "https://canvas.instructure.com/"
+    access_token = 'enter token'
+    canvas = Canvas(base_url, access_token)
+    list = canvas.get_calendar_events(all_events = "true")
+    for event in list:
+        await ctx.channel.send(f'*Title:* **{event.title}** \n *Start:* {event.start_at} \n *End:* {event.end_at} \n *Description:* {event.description}')
+    await ctx.channel.send('__**Here are all of your events!**__'
+                           + "```\nOutputs include the event's: "
+                           + '\nTitle: [title] \nStart: [start date] \nEnd: [end date] \nDescription: [description]```')
+
+'''Announcement command that shows all of the current announcements for a specific class'''
+@client.command(aliases = ['a', 'A'])
+async def announcements(ctx):
+    base_url = "https://canvas.instructure.com/"
+    access_token = 'enter token'
+    canvas = Canvas(base_url, access_token)
+    list = canvas.get_announcements(context_codes = "course_2421114")
+    for announce in list:
+        await ctx.channel.send(f'*Title:* **{announce.title}** \n *Message:* {announce.message} \n *Posted:* {announce.posted_at}')
+    await ctx.channel.send('__**Here are your current announcements!**__'
+                           + "```\nOutputs include the announcement's: "
+                           + '\nTitle: [title] \nMessage: [message] \nPosted: [posted date]```')
+
+client.run(TOKEN)
