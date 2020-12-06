@@ -4,6 +4,8 @@ Our team started working on this project for our Senior Design Class during the 
 The final product will consists of several different features such as:
 Web service account notifications, calendar event retrievals, file downloading/uploading capabilities, etc...
 
+![TAMUK](https://user-images.githubusercontent.com/52770090/101292759-1719df80-37d7-11eb-940d-3c8d4bbeb353.png)
+
 Join us as we try to accomplish a task that will challenge us at every corner and put our knowledge to the test!
 
 Please check out the following GitHub repositories if you wish to pursue a similar endeavor in Discord or Canvas.
