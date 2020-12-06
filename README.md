@@ -10,9 +10,17 @@ Join us as we try to accomplish a task that will challenge us at every corner an
 
 Please check out the following GitHub repositories if you wish to pursue a similar endeavor in Discord or Canvas.
 
-Discord API - https://github.com/Rapptz/discord.py
+Discord API:
+https://github.com/Rapptz/discord.py
 
-Canvas API - https://github.com/ucfopen/canvasapi
+<img src ="https://user-images.githubusercontent.com/52770090/101292886-d40c3c00-37d7-11eb-9197-3a10231023bc.jpg" width = "140" height ="100">
+
+
+Canvas API:
+https://github.com/ucfopen/canvasapi
+
+<img src ="https://user-images.githubusercontent.com/52770090/101292883-cf478800-37d7-11eb-9f1c-2d62d89f46b3.png" width = "100" height ="100">
+
 
 The purpose of this project can be answered in the following three questions:
 
