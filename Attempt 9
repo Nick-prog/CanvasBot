@@ -1,0 +1,179 @@
+import discord
+from discord.ext import commands
+from canvasapi import Canvas
+import re
+import pprint
+
+
+TOKEN = 'enter token'
+intents = discord.Intents.default()
+intents.members = True
+client = commands.Bot(command_prefix = '$', intents=intents)
+
+
+base_url = "https://canvas.instructure.com/"
+dict = {}
+
+class CanvasBot:
+    @client.event
+    async def on_ready():
+        global dict
+        print('Bot is ready')
+        for guild in client.guilds:
+            for member in guild.members:
+                dict[f'{member.id}'] = {"Access": 'None', "Username": f'{member}'}
+        pprint.pprint(dict)
+       
+    @client.event
+    async def on_message(message):
+        if isinstance(message.channel, discord.channel.DMChannel):
+            print('This is a Private Channel.')
+        else:
+            print('This is a Text Channel.')
+            '''
+            if message.content.startswith('!members'):
+                for guild in client.guilds:
+                    for member in guild.members:
+                        dict = {f'{member.id}': 'None'}
+                        print(f"{member}: ", dict)
+            if message.content.startswith('!update'):
+                for guild in client.guilds:
+                    for member in guild.members:
+                        dict = {f'{member.id}'}
+                        print(f"{member}: ", dict)
+            '''
+        await client.process_commands(message)
+ 
+    '''Info command that shows all of the current commands for the current version of the code'''
+    @client.command(aliases = ['i', 'I'])
+    async def info(ctx):
+        message = ("__**Welcome to Canvas Bot.**__"
+                    + "\n *Courses command*"
+                    + "\n Type **$courses**, **$c** or **$C** to display all of your currently enrolled."
+                    + "\n *Event command*"
+                    + "\n Type **$events**, **$e** or **$E** to display all of your current events based on your user id."
+                    + "\n *Announcment command*"
+                    + "\n Type **$announcements**, **$a** or **$A** along with one of your course's ids to display all of your current announcements for that specific course."
+                    + "\n __Example:__ $a 2421114"
+                    + "\n *Create Event command*"
+                    + "\n Type **$create_event**, **$ce** or **$CE** along with your user id, title, description, start and end time for the event."
+                    + "\n __Example:__ $ce 28468322 Test Test 12/5:00 13/6:35"
+                    + "\n *User command*"
+                    + "\n Type **$user**, **$u** or **$U** along with one of your course's ids and your first and last name to display your user id."
+                    + "\n __Example:__ $u 2421114 Nickolas Rodriguez"
+                    + "\n __**Please make sure for all commands, after all other input parameters needed, you are inserting your correct access token associated with your Canvas account!**__")
+        await ctx.channel.send(message)
+
+    '''Course command that shows all of the current courses for a specific user'''
+    @client.command(aliases = ['c', 'C'])
+    async def courses(ctx):
+        global dict
+        if (dict[f'{ctx.author.id}']["Access"] == 'None'):
+            await ctx.channel.send("**Uh-oh!** \nPlease insert check to see if you inserted the proper parameters. \nCheck **$info** for help.")
+        else:
+            Dict = 'j '.join(dict[f'{ctx.author.id}']["Access"])
+            access_token = (Dict)
+            canvas = Canvas(base_url, access_token)
+            list = canvas.get_courses()
+            await ctx.channel.send(f'@{ctx.author.name} ```Here is your output!\n```')
+            for courses in list:
+                await ctx.channel.send(f'*Name:* **{courses.name}** \n*Course ID:* {courses.id} \n*Course Code:* _{courses.course_code}_')
+            await ctx.channel.send('__**Here are your current courses!**__'
+                            + "```\nOutputs include the course's: "
+                            + '\nName: [course name] \nCourse ID: [id] \nCourse Code: [code]```')
+
+    '''Event command that shows all of the current events for a specific user'''
+    @client.command(aliases = ['e','E'])
+    async def events(ctx):
+        global dict
+        if (dict[f'{ctx.author.id}']["Access"] == 'None'):
+            await ctx.channel.send("**Uh-oh!** \nPlease insert check to see if you inserted the proper parameters. \nCheck **$info** for help.")
+        else:
+            Dict = 'j '.join(dict[f'{ctx.author.id}']["Access"])
+            access_token = (Dict)
+            canvas = Canvas(base_url, access_token)
+            list = canvas.get_calendar_events(all_events = "true")
+            await ctx.channel.send(f'@{ctx.author.name} ```Here is your output!\n```')
+            for event in list:
+                cleanr = re.compile('<.*?>')
+                description = re.sub(cleanr, '', f'{event.description}')
+                await ctx.channel.send(f'*Title:* **{event.title}** \n *Start:* {event.start_at} \n *End:* {event.end_at} \n *Description:* {description}')
+            await ctx.channel.send('__**Here are all of your events!**__'
+                            + "```\nOutputs include the event's: "
+                            + '\nTitle: [title] \nStart: [start date] \nEnd: [end date] \nDescription: [description]```')
+
+    '''Announcement command that shows all of the current announcements for a specific class the user inputs'''
+    @client.command(aliases = ['a', 'A'])
+    async def announcements(ctx, course):
+        global dict
+        input = "course_" + course
+        if (dict[f'{ctx.author.id}']["Access"] == 'None'):
+            await ctx.channel.send("**Uh-oh!** \nPlease insert check to see if you inserted the proper parameters. \nCheck **$info** for help.")
+        else:
+            Dict = 'j '.join(dict[f'{ctx.author.id}']["Access"])
+            access_token = (Dict)
+            canvas = Canvas(base_url, access_token)
+            list = canvas.get_announcements(context_codes = input)
+            await ctx.channel.send(f'@{ctx.author.name} ```Here is your output!\n```')
+            for announce in list:
+                cleanr = re.compile('<.*?>')
+                message = re.sub(cleanr, '', f'{announce.message}')
+                await ctx.channel.send(f'*Title:* **{announce.title}** \n *Message:* {message} \n *Posted:* {announce.posted_at}')
+            await ctx.channel.send('__**Here are your current announcements!**__'
+                            + "```\nOutputs include the announcement's: "
+                            + '\nTitle: [title] \nMessage: [message] \nPosted: [posted date]```')
+
+    @client.command(aliases = ['s', 'S'])
+    async def setup(ctx, access):
+        global access_token
+        global dict
+        dict[f'{ctx.author.id}']["Access"] = {f'{access}'}
+        pprint.pprint(dict)
+        await ctx.channel.send(f'Your access token has been recieved!\n You are now ready to start using the Canvas Bot!\n Type **$info** for a command list.')
+
+    @client.command(aliases = ['ce', 'CE'])
+    async def create_event(ctx, id, title, des, start, end):
+        global dict
+        context_code = 'user_'+ id
+        calendar_event = {'context_code': context_code, 'title': title, 'description': des, 'start_at': start, 'end_at': end}
+        if (dict[f'{ctx.author.id}']["Access"] == 'None'):
+            await ctx.channel.send("**Uh-oh!** \nPlease insert check to see if you inserted the proper parameters. \nCheck **$info** for help.")
+        else:
+            Dict = 'j '.join(dict[f'{ctx.author.id}']["Access"])
+            access_token = (Dict)
+            canvas = Canvas(base_url, access_token)
+            canvas.create_calendar_event(calendar_event)
+            await ctx.channel.send(f'@{ctx.author.name} ```Check your calendar for the new event!\n```')
+
+    @client.command(aliases = ['f', 'F'])
+    async def file(ctx, input):
+        global dict
+        if (dict[f'{ctx.author.id}']["Access"] == 'None'):
+            await ctx.channel.send("**Uh-oh!** \nPlease insert check to see if you inserted the proper parameters. \nCheck **$info** for help.")
+        else:
+            Dict = 'j '.join(dict[f'{ctx.author.id}']["Access"])
+            access_token = (Dict)
+            canvas = Canvas(base_url, access_token)
+            list = canvas.get_file(display_name = input)
+            await ctx.channel.send(f'@{ctx.author.name} ```Here is your output!\n```')
+            for file in list:
+                await ctx.channel.send()
+            await ctx.channel.send('__**Here are your current announcements!**__'
+                            + "```\nOutputs include the announcement's: "
+                            + '\nTitle: [title] \nMessage: [message] \n```')
+
+    @client.command(aliases = ['u','U'])
+    async def user(ctx, id, first, last):
+       global dict
+       name = first + ' ' + last
+       if (dict[f'{ctx.author.id}']["Access"] == 'None'):
+           await ctx.channel.send("**Uh-oh!** \nPlease insert check to see if you inserted the proper parameters. \nCheck **$info** for help.")
+       else:
+           Dict = 'j '.join(dict[f'{ctx.author.id}']["Access"])
+           access_token = (Dict)
+           canvas = Canvas(base_url,access_token)
+           course = canvas.get_course(id)
+           user = course.get_users(search_term = name)
+           await ctx.channel.send(user[0])
+
+    client.run(TOKEN)
