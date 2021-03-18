@@ -4,7 +4,7 @@ from canvasapi import Canvas
 import re
 import pprint
 
-TOKEN = 'discord token'
+TOKEN = 'token'
 intents = discord.Intents.default()
 intents.members = True
 client = commands.Bot(command_prefix = '$', intents=intents)
